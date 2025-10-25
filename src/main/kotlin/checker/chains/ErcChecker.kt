@@ -1,15 +1,55 @@
 package checker.chains
 
+import checker.PriceCache
+import io.ethers.abigen.generated.ERC20
 import io.ethers.core.types.Address
 import io.ethers.core.types.BlockId
 import io.ethers.providers.Provider
+import io.ethers.providers.types.sendAwait
+import io.ethers.providers.types.unwrap
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.delay
+import java.math.BigDecimal
 
-fun getEthBalance(addressString: String, rpcUrl: String, tokens: List<String>): String {
-    val address = Address(addressString)
-    val provider = Provider.fromUrl(rpcUrl).unwrap()
+class ErcChecker(private val priceCache: PriceCache) {
+    suspend fun getChainBalanceInUsd(
+        client: HttpClient,
+        addressString: String,
+        rpcUrl: String,
+        tokenList: List<String>
+    ): BigDecimal {
+        val address = Address(addressString)
+        val provider = Provider.fromUrl(rpcUrl).unwrap()
+        val balanceEth = provider.getBalance(address, BlockId.LATEST).sendAwait().unwrap()
 
-    val balanceEth = provider.getBalance(address, BlockId.LATEST).sendAwait().unwrap()
-    return balanceEth.toBigDecimal(18).toPlainString()
+        val tokens = tokenList.map { ERC20(provider, Address(it)) }
+        val symbols = tokens.map { it.symbol().call(BlockId.LATEST) }.sendAwait().unwrap()
+        val decimals = tokens.map { it.decimals().call(BlockId.LATEST) }.sendAwait().unwrap()
+        val tokensBalances = tokens.map { it.balanceOf(address).call(BlockId.LATEST) }.sendAwait().unwrap()
+
+        var totalBalance = priceCache.getTokenPrice(client, "eth") * balanceEth.toBigDecimal(18)
+        tokensBalances.forEachIndexed { i, balance ->
+            val symbol = symbols[i]
+            val scaled = balance.toBigDecimal(decimals[i].toInt())
+
+            delay(500)
+            totalBalance += priceCache.getTokenPrice(client, symbol.lowercase()) * scaled
+        }
+
+        return totalBalance
+    }
 }
 
-private const val PUBLIC_RPC_URL: String = "wss://0xrpc.io/eth"
+// TODO: удалить позже
+suspend fun main() {
+    val tokenList = listOf(
+        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+    )
+    val balance = ErcChecker(PriceCache()).getChainBalanceInUsd(
+        HttpClient(),
+        "0x398154d05084e8f2d72fC82583E4B2e7A71c9E30",
+        "https://arb1.arbitrum.io/rpc",
+        tokenList
+    )
+    println(balance)
+}

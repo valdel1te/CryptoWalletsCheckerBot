@@ -15,7 +15,9 @@ import java.time.Duration
 import java.time.Instant
 
 class PriceCache {
-    private var logger = LoggerFactory.getLogger(this.javaClass.name)
+    private val logger = LoggerFactory.getLogger(this.javaClass.name)
+
+    private val coinGeckoApiSimple = "https://api.coingecko.com/api/v3/simple/"
 
     private var lastUpdate: Instant? = null
     private var cachedPrices: Map<String, BigDecimal> = emptyMap()
@@ -33,7 +35,7 @@ class PriceCache {
             cachedPrices = fetchPricesUsd(client, symbols) ?: cachedPrices
             lastUpdate = now
 
-            logger.info("Updating prices")
+            logger.info("Updating prices, arg token: ${token.lowercase()} -> ${cachedPrices[token] ?: BigDecimal(0)}")
         }
 
         return cachedPrices[token] ?: BigDecimal(0)
@@ -41,7 +43,7 @@ class PriceCache {
 
     suspend fun fetchPricesUsd(client: HttpClient, symbols: String): Map<String, BigDecimal>? {
         try {
-            val url = "https://api.coingecko.com/api/v3/simple/price?symbols=$symbols&vs_currencies=usd"
+            val url = "${coinGeckoApiSimple}price?symbols=${symbols}&vs_currencies=usd"
 
             val responseText = client.get(url).body<String>()
             if (Json.parseToJsonElement(responseText) !is JsonObject)

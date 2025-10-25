@@ -4,6 +4,7 @@ import bot.handlers.CommandHandler
 import bot.handlers.Handler
 import bot.handlers.StatesHandler
 import checker.PriceCache
+import checker.chains.ErcChecker
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import org.kodein.di.DI
@@ -35,4 +36,5 @@ val di = DI {
 
     // checker folder
     bindSingletonOf(::PriceCache)
+    bindSingletonOf(::ErcChecker)
 }

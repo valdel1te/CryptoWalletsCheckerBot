@@ -1,11 +1,17 @@
 plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.serialization") version "2.1.0"
+    id("io.kriptal.ethers.abigen-plugin") version "1.4.4"
     application
 }
 
 group = "yo.soft"
 version = "1.0-SNAPSHOT"
+
+ethersAbigen {
+    directorySource("src/main/abi")
+    outputDir = "generated/source/ethers/main/kotlin"
+}
 
 repositories {
     mavenCentral()
