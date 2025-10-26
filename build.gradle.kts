@@ -52,11 +52,13 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     // BOM
     implementation(platform("io.kriptal.ethers:ethers-bom:1.4.4"))
-    // KT ETH
+    // ETH
     implementation("io.kriptal.ethers:ethers-abi")
     implementation("io.kriptal.ethers:ethers-core")
     implementation("io.kriptal.ethers:ethers-providers")
     implementation("io.kriptal.ethers:ethers-signers")
+    // SOL
+    implementation("org.sol4k:sol4k:0.5.17")
 }
 
 application {

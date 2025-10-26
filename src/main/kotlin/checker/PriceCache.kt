@@ -20,7 +20,7 @@ class PriceCache {
     private val coinGeckoApiSimple = "https://api.coingecko.com/api/v3/simple/"
 
     private var lastUpdate: Instant? = null
-    private var cachedPrices: Map<String, BigDecimal> = emptyMap()
+    private var cachedPrices: MutableMap<String, BigDecimal> = mutableMapOf()
 
     suspend fun getTokenPrice(client: HttpClient, token: String): BigDecimal {
         val now = Instant.now()
@@ -41,7 +41,15 @@ class PriceCache {
         return cachedPrices[token] ?: BigDecimal(0)
     }
 
-    suspend fun fetchPricesUsd(client: HttpClient, symbols: String): Map<String, BigDecimal>? {
+    fun addNewPrice(token: String, price: BigDecimal) {
+        if (cachedPrices[token] == null && cachedPrices[token] == price)
+            return
+
+        cachedPrices[token] = price
+        logger.info("Updating prices, arg token: ${token.lowercase()} -> ${cachedPrices[token] ?: BigDecimal(0)}")
+    }
+
+    private suspend fun fetchPricesUsd(client: HttpClient, symbols: String): MutableMap<String, BigDecimal>? {
         try {
             val url = "${coinGeckoApiSimple}price?symbols=${symbols}&vs_currencies=usd"
 
