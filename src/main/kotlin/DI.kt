@@ -5,6 +5,7 @@ import bot.handlers.Handler
 import bot.handlers.StatesHandler
 import checker.PriceCache
 import checker.chains.ErcChecker
+import checker.chains.JettonChecker
 import checker.chains.SplChecker
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
@@ -39,4 +40,5 @@ val di = DI {
     bindSingletonOf(::PriceCache)
     bindSingletonOf(::ErcChecker)
     bindSingletonOf(::SplChecker)
+    bindSingletonOf(::JettonChecker)
 }
