@@ -4,6 +4,7 @@ import checker.PriceCache
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
@@ -29,6 +30,8 @@ class JettonChecker(private val priceCache: PriceCache) {
             balance += tonPrice * walletInfo.balance.toBigDecimal().movePointLeft(9)
 
             tokenList.forEach { token ->
+                delay(500)
+
                 val jettonUserInfoUrl = "$walletInfoUrl/jettons/$token"
                 val jettonUserInfoResponse: String = client.get(jettonUserInfoUrl).body()
                 val jettonUserInfo = json.decodeFromString<JettonUserInfo>(jettonUserInfoResponse)

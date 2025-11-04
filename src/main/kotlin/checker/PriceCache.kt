@@ -3,12 +3,7 @@ package checker
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.Duration
@@ -47,6 +42,17 @@ class PriceCache {
 
         cachedPrices[token] = price
         logger.info("Updating prices, arg token: ${token.lowercase()} -> ${cachedPrices[token] ?: BigDecimal(0)}")
+    }
+
+    suspend fun fillTokensPrice(client: HttpClient, tokens: String) {
+        cachedPrices = fetchPricesUsd(client, tokens) ?: cachedPrices
+        lastUpdate = Instant.now()
+
+        logger.info("Prices: \n${getAllPricesString()}")
+    }
+
+    private fun getAllPricesString(): String {
+        return cachedPrices.entries.joinToString("\n") { "${it.key}: ${it.value}" }
     }
 
     private suspend fun fetchPricesUsd(client: HttpClient, symbols: String): MutableMap<String, BigDecimal>? {

@@ -38,6 +38,7 @@ dependencies {
     implementation("org.ktorm:ktorm-core:$ktormVersion")
     implementation("org.ktorm:ktorm-support-postgresql:$ktormVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
     // DI
     implementation("org.kodein.di:kodein-di:$kodeinVersion")
     implementation("com.typesafe:config:$typesafeVersion")
@@ -45,8 +46,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinJsonVersion")
     // LOG
     implementation("ch.qos.logback:logback-classic:$logbackVersion") // SLF4J + Logback
-    // https://mvnrepository.com/artifact/org.liquibase/liquibase-maven-plugin
-    implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     // TEST
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:$mockkVersion")
