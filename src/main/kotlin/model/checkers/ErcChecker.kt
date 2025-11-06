@@ -1,6 +1,6 @@
-package checker.chains
+package model.checkers
 
-import checker.PriceCache
+import model.PriceCache
 import io.ethers.abigen.generated.ERC20
 import io.ethers.core.types.Address
 import io.ethers.core.types.BlockId

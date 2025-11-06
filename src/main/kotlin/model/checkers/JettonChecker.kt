@@ -1,6 +1,6 @@
-package checker.chains
+package model.checkers
 
-import checker.PriceCache
+import model.PriceCache
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*

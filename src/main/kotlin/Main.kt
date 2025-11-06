@@ -1,6 +1,6 @@
 import bot.Bot
 import bot.Configuration
-import checker.PriceCache
+import model.PriceCache
 import io.ktor.client.HttpClient
 import liquibase.Liquibase
 import org.kodein.di.instance

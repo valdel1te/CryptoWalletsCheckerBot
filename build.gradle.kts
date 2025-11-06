@@ -38,6 +38,7 @@ dependencies {
     implementation("org.ktorm:ktorm-core:$ktormVersion")
     implementation("org.ktorm:ktorm-support-postgresql:$ktormVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.ktorm:ktorm-jackson:$ktormVersion")
     implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
     // DI
     implementation("org.kodein.di:kodein-di:$kodeinVersion")

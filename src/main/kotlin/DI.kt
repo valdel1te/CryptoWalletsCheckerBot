@@ -3,16 +3,21 @@ import bot.handlers.CallbackHandler
 import bot.handlers.CommandHandler
 import bot.handlers.Handler
 import bot.handlers.StatesHandler
-import checker.PriceCache
-import checker.chains.ErcChecker
-import checker.chains.JettonChecker
-import checker.chains.SplChecker
+import model.PriceCache
+import model.checkers.ErcChecker
+import model.checkers.JettonChecker
+import model.checkers.SplChecker
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import data.repositories.ProfileRepository
+import data.repositories.UserRepository
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
+import model.services.ConfigService
+import model.services.ProfileService
+import model.services.UserService
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.bindSingletonOf
@@ -60,6 +65,15 @@ val di = DI {
             instance<liquibase.database.Database>()
         )
     }
+
+    // data
+    bindSingletonOf(::UserRepository)
+    bindSingletonOf(::ProfileRepository)
+
+    // services
+    bindSingletonOf(::ConfigService)
+    bindSingletonOf(::ProfileService)
+    bindSingletonOf(::UserService)
 
     // handlers
     bindSingletonOf(::CommandHandler)
