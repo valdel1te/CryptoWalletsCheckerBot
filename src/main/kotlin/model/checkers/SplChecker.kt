@@ -80,15 +80,3 @@ class SplChecker(private val priceCache: PriceCache) {
         val usdPrice: Double,
     )
 }
-
-// TODO: delete later
-suspend fun main() {
-    val balance = SplChecker(PriceCache()).getSolBalanceInUsd(
-        HttpClient(), "Any5gL74oUQy9Psb3goym9STaYMau4CMrTkryS37T7iz", "https://api.mainnet-beta.solana.com", listOf(
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-            "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
-            "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
-        )
-    )
-    println(balance)
-}

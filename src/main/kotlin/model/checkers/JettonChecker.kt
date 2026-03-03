@@ -67,16 +67,3 @@ class JettonChecker(private val priceCache: PriceCache) {
         val decimals: Int,
     )
 }
-
-// TODO: delete later
-suspend fun main() {
-    val balance = JettonChecker(PriceCache()).getTonBalanceInUsd(
-        HttpClient(),
-        "UQCHQUpQQny2yaa-BBOFcKRM-QGnQHnbneWo8B4gfbeAUPUC",
-        listOf(
-            "EQB420yQsZobGcy0VYDfSKHpG2QQlw-j1f_tPu1J488I__PX",
-            "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT"
-        )
-    )
-    println(balance)
-}

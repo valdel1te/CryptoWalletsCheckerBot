@@ -39,17 +39,3 @@ class ErcChecker(private val priceCache: PriceCache) {
         return totalBalance
     }
 }
-
-// TODO: удалить позже
-suspend fun main() {
-    val tokenList = listOf(
-        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
-    )
-    val balance = ErcChecker(PriceCache()).getChainBalanceInUsd(
-        HttpClient(),
-        "0x398154d05084e8f2d72fC82583E4B2e7A71c9E30",
-        "https://arb1.arbitrum.io/rpc",
-        tokenList
-    )
-    println(balance)
-}

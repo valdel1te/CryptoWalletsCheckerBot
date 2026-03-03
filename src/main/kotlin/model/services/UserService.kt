@@ -13,12 +13,12 @@ class UserService(
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    fun create(tgId: Long, config: UserConfig?) {
+    fun create(tgId: Long, config: UserConfig = defaultConfig) {
         if (getByTgId(tgId) != null) return
 
         val newUser = User {
             this.tgId = tgId
-            this.config = config ?: defaultConfig
+            this.config = config
         }
 
         repository.create(newUser)

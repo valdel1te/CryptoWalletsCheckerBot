@@ -81,28 +81,3 @@ class PriceCache {
         }
     }
 }
-
-// TODO: удалить позже
-suspend fun main() {
-    val client = HttpClient()
-    val priceCache = PriceCache()
-    val eth = priceCache.getTokenPrice(client, "eth")
-    val btc = priceCache.getTokenPrice(client, "btc")
-
-    println("eth is $eth")
-    println("btc is $btc")
-
-    println("eth is ${priceCache.getTokenPrice(client, "eth")}") // посмотреть будет в логах третья запись или нет
-
-    // задача окончательно доебать коингеко
-    val sol = priceCache.getTokenPrice(client, "sol")
-    println("sol is $sol")
-    val ton = priceCache.getTokenPrice(client, "ton")
-    println("ton is $ton")
-    val notcoin = priceCache.getTokenPrice(client, "not")
-    println("notcoin is $notcoin")
-    val matic = priceCache.getTokenPrice(client, "matic")
-    println("matic is $matic")
-
-    println("eth is still ${priceCache.getTokenPrice(client, "eth")}")
-}

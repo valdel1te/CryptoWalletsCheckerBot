@@ -1,84 +1,105 @@
 package bot
 
+import bot.callbacks.ECallbackData
+import bot.callbacks.generateCallbackDataWithArgs
+import data.User
 import dev.inmo.tgbotapi.extensions.api.send.sendMessage
 import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContext
-import dev.inmo.tgbotapi.types.ChatIdentifier
-import dev.inmo.tgbotapi.types.buttons.KeyboardMarkup
-import dev.inmo.tgbotapi.types.message.MarkdownV2ParseMode
-import dev.inmo.tgbotapi.types.message.ParseMode
+import dev.inmo.tgbotapi.extensions.utils.types.buttons.dataButton
+import dev.inmo.tgbotapi.extensions.utils.types.buttons.inlineKeyboard
+import dev.inmo.tgbotapi.types.message.MarkdownParseMode
+import dev.inmo.tgbotapi.types.toChatId
+import dev.inmo.tgbotapi.utils.row
+import di
+import model.Localizer
+import org.kodein.di.instance
+import kotlin.getValue
 
-/**
- * Безопасная отправка сообщения
- *
- * Может помочь если, например, бот попытается отправить сообщение пользователю, который его заблокировал
- * @param onError что делать в случае ошибки, по умолчанию - игнорировать
- */
-suspend fun BehaviourContext.sendMessageSafe(
-    chatId: ChatIdentifier,
-    text: String,
-    parseMode: ParseMode = MarkdownV2ParseMode,
-    replyMarkup: KeyboardMarkup? = null,
-    onError: (Exception) -> Unit = {}
-) {
-    try {
-        sendMessage(
-            chatId = chatId,
-            text = text,
-            parseMode = parseMode,
-            replyMarkup = replyMarkup
-        )
-    } catch (e: Exception) {
-        onError(e)
+suspend fun BehaviourContext.sendWelcomeMessage(user: User) {
+    val localizer: Localizer by di.instance()
+
+    val keyboard = inlineKeyboard {
+        row {
+            dataButton(
+                localizer.getText("settings", user),
+                generateCallbackDataWithArgs(ECallbackData.SHOW_SETTINGS, listOf())
+            )
+        }
     }
+
+    sendMessage(
+        chatId = user.tgId.toChatId(),
+        text = "WELCOME BROTHER", // TODO: welcome message text
+        replyMarkup = keyboard
+    )
 }
 
-/** Отправка нескольких сообщений вместо одного, если текст превышает символьный лимит */
-suspend fun BehaviourContext.sendLongMessages(chatId: ChatIdentifier, text: String) {
-    val messagesTexts = splitMessageText(text)
-    messagesTexts.forEach { messageText ->
-        sendMessage(
-            chatId = chatId,
-            text = messageText,
-            parseMode = MarkdownV2ParseMode
-        )
+suspend fun BehaviourContext.sendConfigSettingsMessage(user: User) {
+    val localizer: Localizer by di.instance()
+
+    val config = user.config
+    val ethConfig = config.eth
+    val solConfig = config.sol[0]
+    val tonConfig = config.ton[0]
+    val solTokensCount = solConfig.tokens.size
+    val tonTokensCount = tonConfig.tokens.size
+
+    val configString = """
+        *language*: ${config.language.uppercase()}
+        
+        *eth chains*:
+    ${
+        ethConfig.joinToString("") { ethChain ->
+            val tokenCount = ethChain.tokens.size
+            """
+            ▪︎ ${ethChain.name} ($tokenCount token${if (tokenCount > 1) "s" else ""}) → RPC ${ethChain.rpcUrl}
+            """
+        }
     }
+        *sol*:
+            ▪︎ $solTokensCount token${if (solTokensCount > 1) "s" else ""} → RPC ${solConfig.rpcUrl}
+            
+        *ton*:
+            ▪︎ $tonTokensCount token${if (tonTokensCount > 1) "s" else ""}
+
+    """.trimIndent()
+
+    val keyboard = inlineKeyboard { // TODO: keyboard text locales + style
+        row {
+            dataButton(localizer.getText("languageSetting", user), "l")
+        }
+        row {
+            dataButton("eth settings", "e")
+            dataButton("sol settings", "s")
+            dataButton("ton settings", "t")
+        }
+    }
+
+    sendMessage(
+        chatId = user.tgId.toChatId(),
+        text = configString,
+        parseMode = MarkdownParseMode,
+        replyMarkup = keyboard
+    )
 }
 
-/**
- * Разбиение текста на несколько сообщений, если оно превышает лимит по символам
- *
- * @param text исходный текст
- * @param maxLength символьный лимит на одно сообщение, по умолчанию равен 4096
- * @return список текста из n частей для отправки n сообщений
- */
-private fun splitMessageText(text: String, maxLength: Int = Bot.MAX_MESSAGE_LENGTH): List<String> {
-    if (text.length <= maxLength) return listOf(text)
+suspend fun BehaviourContext.sendLanguageSettingMessage(tgId: Long) {
+    val localizer: Localizer by di.instance()
 
-    val parts = mutableListOf<String>()
-    val lines = text.lines()
-    var currentPart = StringBuilder()
-
-    for (line in lines) {
-        if (currentPart.isNotEmpty() && currentPart.length + line.length + 1 > maxLength) {
-            parts.add(currentPart.toString())
-            currentPart = StringBuilder()
+    sendMessage(
+        chatId = tgId.toChatId(),
+        text = "${localizer.getText("chooseLanguage", "ru")} / ${localizer.getText("chooseLanguage", "en")}",
+        replyMarkup = inlineKeyboard {
+            row {
+                dataButton(
+                    localizer.getText("language", "ru"),
+                    generateCallbackDataWithArgs(ECallbackData.SET_LANGUAGE, listOf("ru", "true"))
+                )
+                dataButton(
+                    localizer.getText("language", "en"),
+                    generateCallbackDataWithArgs(ECallbackData.SET_LANGUAGE, listOf("en", "true"))
+                )
+            }
         }
-
-        if (currentPart.isNotEmpty()) {
-            currentPart.append("\n")
-        }
-        currentPart.append(line)
-
-        if (currentPart.length > maxLength) {
-            val chunked = currentPart.toString().chunked(maxLength)
-            parts.addAll(chunked.dropLast(1))
-            currentPart = StringBuilder(chunked.last())
-        }
-    }
-
-    if (currentPart.isNotEmpty()) {
-        parts.add(currentPart.toString())
-    }
-
-    return parts
+    )
 }

@@ -7,7 +7,7 @@ import io.ktor.utils.io.*
 import org.slf4j.LoggerFactory
 
 class Bot(
-    private val handlers: List<Handler>
+    private val handlers: List<Handler>,
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 

@@ -3,10 +3,6 @@ import bot.handlers.CallbackHandler
 import bot.handlers.CommandHandler
 import bot.handlers.Handler
 import bot.handlers.StatesHandler
-import model.PriceCache
-import model.checkers.ErcChecker
-import model.checkers.JettonChecker
-import model.checkers.SplChecker
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import data.repositories.ProfileRepository
@@ -15,6 +11,11 @@ import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
+import model.Localizer
+import model.PriceCache
+import model.checkers.ErcChecker
+import model.checkers.JettonChecker
+import model.checkers.SplChecker
 import model.services.ConfigService
 import model.services.ProfileService
 import model.services.UserService
@@ -90,8 +91,11 @@ val di = DI {
     // bot
     bindSingletonOf(::Bot)
 
-    // checker folder
+    // helpers
     bindSingletonOf(::PriceCache)
+    bindSingletonOf(::Localizer)
+
+    // crypto checkers
     bindSingletonOf(::ErcChecker)
     bindSingletonOf(::SplChecker)
     bindSingletonOf(::JettonChecker)
