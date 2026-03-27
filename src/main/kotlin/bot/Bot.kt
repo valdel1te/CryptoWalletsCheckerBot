@@ -1,29 +1,27 @@
 package bot
 
-import bot.handlers.Handler
-import dev.inmo.tgbotapi.extensions.api.telegramBot
-import dev.inmo.tgbotapi.extensions.behaviour_builder.buildBehaviourWithFSMAndStartLongPolling
+import dev.inmo.micro_utils.coroutines.subscribe
+import dev.inmo.tgbotapi.bot.TelegramBot
+import dev.inmo.tgbotapi.extensions.behaviour_builder.buildBehaviourWithLongPolling
 import io.ktor.utils.io.*
 import org.slf4j.LoggerFactory
 
 class Bot(
-    private val handlers: List<Handler>,
+    private val telegramBot: TelegramBot,
+    private val handler: EventHandler,
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    suspend fun startWithFSMAndLongPolling(token: String) {
-        val bot = telegramBot(token)
-
-        bot.buildBehaviourWithFSMAndStartLongPolling(
+    suspend fun startWithFSMAndLongPolling() {
+        telegramBot.buildBehaviourWithLongPolling(
             defaultExceptionsHandler = { exception ->
                 if (exception !is CancellationException)
                     logger.error(exception.message)
             }
         ) {
             logger.info("Bot started")
-
-            handlers.forEach { handler ->
-                handler.register(this)
+            allUpdatesFlow.subscribe(this) { update ->
+                handler.handleUpdate(update)
             }
         }.join()
     }

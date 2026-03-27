@@ -28,4 +28,8 @@ class Localizer {
         val inputStream = this::class.java.classLoader.getResourceAsStream("locales/${language}.json") ?: return mapOf()
         return jacksonObjectMapper().readValue(inputStream)
     }
+
+    companion object {
+        val SUPPORTED_LANGUAGES = setOf("ru", "en")
+    }
 }

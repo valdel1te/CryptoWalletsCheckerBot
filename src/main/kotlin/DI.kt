@@ -1,12 +1,20 @@
 import bot.Bot
-import bot.handlers.CallbackHandler
-import bot.handlers.CommandHandler
-import bot.handlers.Handler
-import bot.handlers.StatesHandler
+import bot.BotEvent
+import bot.EventHandler
+import bot.callbacks.SetLanguageCallback
+import bot.callbacks.ShowSettingsCallback
+import bot.callbacks.ShowLanguageSettingsCallback
+import bot.commands.SettingsCommand
+import bot.commands.StartCommand
+import bot.events.BotEventListener
+import bot.events.EventBus
+import bot.messages.BotMessageService
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import data.repositories.ProfileRepository
 import data.repositories.UserRepository
+import dev.inmo.tgbotapi.bot.TelegramBot
+import dev.inmo.tgbotapi.extensions.api.telegramBot
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
@@ -71,25 +79,38 @@ val di = DI {
     bindSingletonOf(::UserRepository)
     bindSingletonOf(::ProfileRepository)
 
-    // services
+    // server services
     bindSingletonOf(::ConfigService)
     bindSingletonOf(::ProfileService)
     bindSingletonOf(::UserService)
 
-    // handlers
-    bindSingletonOf(::CommandHandler)
-    bindSingletonOf(::CallbackHandler)
-    bindSingletonOf(::StatesHandler)
-    bindSingleton<List<Handler>> {
-        listOf(
-            instance<CommandHandler>(),
-            instance<CallbackHandler>(),
-            instance<StatesHandler>()
-        )
-    }
+    // handler
+    bindSingletonOf(::EventHandler)
 
     // bot
+    bindSingleton<TelegramBot> { telegramBot(instance<Config>().getString("token")) }
     bindSingletonOf(::Bot)
+
+    // bot services
+    bindSingletonOf(::BotMessageService)
+
+    // events
+    bindSingletonOf(::EventBus)
+    bindSingletonOf(::BotEventListener)
+    bindSingletonOf(::StartCommand)
+    bindSingletonOf(::SettingsCommand)
+    bindSingletonOf(::ShowSettingsCallback)
+    bindSingletonOf(::ShowLanguageSettingsCallback)
+    bindSingletonOf(::SetLanguageCallback)
+    bindSingleton<List<BotEvent>> {
+        listOf(
+            instance<StartCommand>(),
+            instance<SettingsCommand>(),
+            instance<ShowSettingsCallback>(),
+            instance<ShowLanguageSettingsCallback>(),
+            instance<SetLanguageCallback>(),
+        )
+    }
 
     // helpers
     bindSingletonOf(::PriceCache)

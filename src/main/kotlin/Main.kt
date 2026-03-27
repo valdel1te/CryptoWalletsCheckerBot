@@ -1,8 +1,8 @@
 import bot.Bot
-import bot.Configuration
-import model.PriceCache
-import io.ktor.client.HttpClient
+import bot.events.BotEventListener
+import io.ktor.client.*
 import liquibase.Liquibase
+import model.PriceCache
 import org.kodein.di.instance
 import java.sql.Connection
 
@@ -19,6 +19,8 @@ suspend fun main() {
     priceCache.fillTokensPrice(HttpClient(), TOKENS) // initial base price list
 
     val bot: Bot by di.instance()
-    val botToken = Configuration.getData("token")
-    bot.startWithFSMAndLongPolling(botToken)
+    val eventListener: BotEventListener by di.instance()
+
+    eventListener.start()
+    bot.startWithFSMAndLongPolling()
 }

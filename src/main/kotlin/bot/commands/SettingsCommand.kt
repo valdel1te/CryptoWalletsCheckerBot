@@ -1,19 +1,28 @@
 package bot.commands
 
-import bot.sendConfigSettingsMessage
-import bot.states.BotState
-import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContextWithFSM
-import dev.inmo.tgbotapi.types.message.content.TextMessage
-import di
+import bot.events.EventBus
+import bot.messages.BotMessageService
+import bot.messages.getConfigSettingsMessageData
+import bot.updates.chatIdOrNull
+import bot.updates.hasCommand
+import dev.inmo.tgbotapi.types.update.MessageUpdate
+import dev.inmo.tgbotapi.types.update.abstracts.Update
 import model.services.UserService
-import org.kodein.di.instance
-import kotlin.getValue
 
-suspend fun BehaviourContextWithFSM<BotState>.settingsCommand(textMessage: TextMessage) {
-    val userService: UserService by di.instance()
+class SettingsCommand(
+    private val eventBus: EventBus,
+    private val messageService: BotMessageService,
+    private val userService: UserService,
+) : Command {
+    override fun canHandle(update: Update): Boolean {
+        return super.canHandle(update) && (update as MessageUpdate).hasCommand("/settings")
+    }
 
-    val tgId = textMessage.chat.id.chatId.long
-    val user = userService.getByTgId(tgId) ?: return
+    override suspend fun handle(messageUpdate: MessageUpdate) {
+        val tgId = messageUpdate.chatIdOrNull ?: return
+        val user = userService.getByTgId(tgId) ?: return
 
-    sendConfigSettingsMessage(user)
+        val messageData = getConfigSettingsMessageData(user)
+        eventBus.publish(messageService.createTextMessage(messageData))
+    }
 }

@@ -1,26 +1,38 @@
 package bot.commands
 
-import bot.sendLanguageSettingMessage
-import bot.sendWelcomeMessage
-import bot.states.BotState
-import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContextWithFSM
-import dev.inmo.tgbotapi.types.message.content.TextMessage
-import di
-import model.Localizer
+import bot.events.EventBus
+import bot.messages.BotMessageService
+import bot.messages.MessageData
+import bot.messages.getLanguageSettingMessageData
+import bot.messages.getWelcomeMessageData
+import bot.updates.chatIdOrNull
+import bot.updates.hasCommand
+import dev.inmo.tgbotapi.types.update.MessageUpdate
+import dev.inmo.tgbotapi.types.update.abstracts.Update
 import model.services.UserService
-import org.kodein.di.instance
 
-suspend fun BehaviourContextWithFSM<BotState>.startCommand(textMessage: TextMessage) {
-    val userService: UserService by di.instance()
-    val localizer: Localizer by di.instance()
-
-    val tgId = textMessage.chat.id.chatId.long
-    val user = userService.getByTgId(tgId)
-    if (user != null) {
-        sendWelcomeMessage(user)
-        return
+class StartCommand(
+    private val eventBus: EventBus,
+    private val messageService: BotMessageService,
+    private val userService: UserService,
+) : Command {
+    override fun canHandle(update: Update): Boolean {
+        return super.canHandle(update) && (update as MessageUpdate).hasCommand("/start")
     }
 
-    userService.create(tgId)
-    sendLanguageSettingMessage(tgId)
+    override suspend fun handle(messageUpdate: MessageUpdate) {
+        val tgId = messageUpdate.chatIdOrNull ?: return
+        val user = userService.getByTgId(tgId)
+
+        val messageData: MessageData
+        if (user != null) {
+            messageData = getWelcomeMessageData(user)
+        } else {
+            userService.create(tgId)
+            messageData = getLanguageSettingMessageData(tgId)
+        }
+
+        val request = messageService.createTextMessage(messageData)
+        eventBus.publish(request)
+    }
 }

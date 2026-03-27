@@ -1,4 +1,4 @@
-package bot.states
+package bot.fsm
 
 import dev.inmo.micro_utils.fsm.common.State
 import dev.inmo.tgbotapi.types.IdChatIdentifier
@@ -12,15 +12,15 @@ import dev.inmo.tgbotapi.types.IdChatIdentifier
  * */
 sealed interface BotState : State {
     override val context: IdChatIdentifier
-    val name: EUserStates
+    val name: UserStates
 }
 
-enum class EUserStates {
+enum class UserStates {
     /* Пример */
     WELCOME
 }
 
 data class WelcomeState(
     override val context: IdChatIdentifier,
-    override val name: EUserStates = EUserStates.WELCOME,
+    override val name: UserStates = UserStates.WELCOME,
 ) : BotState

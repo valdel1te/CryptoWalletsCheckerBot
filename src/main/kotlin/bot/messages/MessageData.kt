@@ -1,42 +1,51 @@
-package bot
+package bot.messages
 
-import bot.callbacks.ECallbackData
+import bot.callbacks.SetLanguageCallbackData
+import bot.callbacks.ShowLanguageSettingsCallbackData
+import bot.callbacks.ShowSettingsCallbackData
 import bot.callbacks.generateCallbackDataWithArgs
 import data.User
-import dev.inmo.tgbotapi.extensions.api.send.sendMessage
-import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContext
+import dev.inmo.tgbotapi.extensions.utils.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.dataButton
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.inlineKeyboard
+import dev.inmo.tgbotapi.types.ChatId
+import dev.inmo.tgbotapi.types.buttons.KeyboardMarkup
 import dev.inmo.tgbotapi.types.message.MarkdownParseMode
+import dev.inmo.tgbotapi.types.message.ParseMode
 import dev.inmo.tgbotapi.types.toChatId
 import dev.inmo.tgbotapi.utils.row
 import di
 import model.Localizer
 import org.kodein.di.instance
-import kotlin.getValue
 
-suspend fun BehaviourContext.sendWelcomeMessage(user: User) {
-    val localizer: Localizer by di.instance()
+data class MessageData(
+    val chatId: ChatId,
+    val text: String,
+    val keyboard: KeyboardMarkup = InlineKeyboardMarkup(),
+    val parseMode: ParseMode = MarkdownParseMode,
+)
 
+private val localizer: Localizer by di.instance()
+
+fun getWelcomeMessageData(user: User): MessageData {
+    val showSettingsCallbackData = ShowSettingsCallbackData()
     val keyboard = inlineKeyboard {
         row {
             dataButton(
                 localizer.getText("settings", user),
-                generateCallbackDataWithArgs(ECallbackData.SHOW_SETTINGS, listOf())
+                generateCallbackDataWithArgs(showSettingsCallbackData)
             )
         }
     }
 
-    sendMessage(
+    return MessageData(
         chatId = user.tgId.toChatId(),
         text = "WELCOME BROTHER", // TODO: welcome message text
-        replyMarkup = keyboard
+        keyboard = keyboard
     )
 }
 
-suspend fun BehaviourContext.sendConfigSettingsMessage(user: User) {
-    val localizer: Localizer by di.instance()
-
+fun getConfigSettingsMessageData(user: User): MessageData {
     val config = user.config
     val ethConfig = config.eth
     val solConfig = config.sol[0]
@@ -64,9 +73,13 @@ suspend fun BehaviourContext.sendConfigSettingsMessage(user: User) {
 
     """.trimIndent()
 
-    val keyboard = inlineKeyboard { // TODO: keyboard text locales + style
+    val showLanguageSettingsCallbackData = ShowLanguageSettingsCallbackData()
+    val keyboard = inlineKeyboard {
         row {
-            dataButton(localizer.getText("languageSetting", user), "l")
+            dataButton(
+                localizer.getText("languageSetting", user),
+                generateCallbackDataWithArgs(showLanguageSettingsCallbackData)
+            )
         }
         row {
             dataButton("eth settings", "e")
@@ -75,29 +88,30 @@ suspend fun BehaviourContext.sendConfigSettingsMessage(user: User) {
         }
     }
 
-    sendMessage(
+    return MessageData(
         chatId = user.tgId.toChatId(),
         text = configString,
-        parseMode = MarkdownParseMode,
-        replyMarkup = keyboard
+        keyboard = keyboard,
+        parseMode = MarkdownParseMode
     )
 }
 
-suspend fun BehaviourContext.sendLanguageSettingMessage(tgId: Long) {
-    val localizer: Localizer by di.instance()
+fun getLanguageSettingMessageData(tgId: Long): MessageData {
+    val setRuLanguageCallbackData = SetLanguageCallbackData(language = "ru", showWelcomeMessage = true)
+    val setEnLanguageCallbackData = SetLanguageCallbackData(language = "en", showWelcomeMessage = true)
 
-    sendMessage(
+    return MessageData(
         chatId = tgId.toChatId(),
         text = "${localizer.getText("chooseLanguage", "ru")} / ${localizer.getText("chooseLanguage", "en")}",
-        replyMarkup = inlineKeyboard {
+        keyboard = inlineKeyboard {
             row {
                 dataButton(
                     localizer.getText("language", "ru"),
-                    generateCallbackDataWithArgs(ECallbackData.SET_LANGUAGE, listOf("ru", "true"))
+                    generateCallbackDataWithArgs(setRuLanguageCallbackData)
                 )
                 dataButton(
                     localizer.getText("language", "en"),
-                    generateCallbackDataWithArgs(ECallbackData.SET_LANGUAGE, listOf("en", "true"))
+                    generateCallbackDataWithArgs(setEnLanguageCallbackData)
                 )
             }
         }

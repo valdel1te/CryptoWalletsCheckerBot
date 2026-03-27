@@ -2,7 +2,7 @@ package bot.callbacks
 
 import bot.events.EventBus
 import bot.messages.BotMessageService
-import bot.messages.getConfigSettingsMessageData
+import bot.messages.getLanguageSettingMessageData
 import bot.updates.chatIdOrNull
 import bot.updates.getCallbackData
 import bot.updates.messageId
@@ -10,31 +10,27 @@ import dev.inmo.tgbotapi.types.update.CallbackQueryUpdate
 import dev.inmo.tgbotapi.types.update.abstracts.Update
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import model.services.UserService
 
 @Serializable
-@SerialName("show_settings")
-data class ShowSettingsCallbackData(
+@SerialName("show_lang_settings")
+data class ShowLanguageSettingsCallbackData(
     val placeholder: String = "",
 ) : CallbackData
 
-class ShowSettingsCallback(
+class ShowLanguageSettingsCallback(
     private val eventBus: EventBus,
     private val messageService: BotMessageService,
-    private val userService: UserService,
 ) : Callback {
     override fun canHandle(update: Update): Boolean {
         if (!super.canHandle(update))
             return false
 
-        return update.getCallbackData() is ShowSettingsCallbackData
+        return update.getCallbackData() is ShowLanguageSettingsCallbackData
     }
 
     override suspend fun handle(callbackUpdate: CallbackQueryUpdate) {
-        val user = userService.getByTgId(callbackUpdate.chatIdOrNull ?: return) ?: return
-
-        val messageData = getConfigSettingsMessageData(user)
-        val request = messageService.editTextMessage(messageData, callbackUpdate.messageId ?: return)
-        eventBus.publish(request)
+        val tgId = callbackUpdate.chatIdOrNull ?: return
+        val messageData = getLanguageSettingMessageData(tgId)
+        eventBus.publish(messageService.editTextMessage(messageData, callbackUpdate.messageId ?: return))
     }
 }
