@@ -50,4 +50,7 @@ data class TonChain(
 )
 
 @Serializable
-data class Token(var address: String)
+data class Token(
+    var address: String,
+    var symbols: String,
+)

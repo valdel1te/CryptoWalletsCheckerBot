@@ -1,9 +1,7 @@
 import bot.Bot
 import bot.BotEvent
 import bot.EventHandler
-import bot.callbacks.SetLanguageCallback
-import bot.callbacks.ShowSettingsCallback
-import bot.callbacks.ShowLanguageSettingsCallback
+import bot.callbacks.*
 import bot.commands.SettingsCommand
 import bot.commands.StartCommand
 import bot.events.BotEventListener
@@ -102,6 +100,8 @@ val di = DI {
     bindSingletonOf(::ShowSettingsCallback)
     bindSingletonOf(::ShowLanguageSettingsCallback)
     bindSingletonOf(::SetLanguageCallback)
+    bindSingletonOf(::ShowEthSettingsCallback)
+    bindSingletonOf(::ChainControlCallback)
     bindSingleton<List<BotEvent>> {
         listOf(
             instance<StartCommand>(),
@@ -109,6 +109,8 @@ val di = DI {
             instance<ShowSettingsCallback>(),
             instance<ShowLanguageSettingsCallback>(),
             instance<SetLanguageCallback>(),
+            instance<ShowEthSettingsCallback>(),
+            instance<ChainControlCallback>(),
         )
     }
 

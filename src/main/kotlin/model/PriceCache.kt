@@ -71,7 +71,7 @@ class PriceCache {
                     return null
 
                 val price = value.jsonObject["usd"]?.jsonPrimitive?.doubleOrNull ?: 0.0
-                pricesMap.put(key, BigDecimal(price))
+                pricesMap[key] = BigDecimal(price)
             }
 
             return pricesMap

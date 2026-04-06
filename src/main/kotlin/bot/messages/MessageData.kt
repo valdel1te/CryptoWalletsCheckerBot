@@ -1,9 +1,7 @@
 package bot.messages
 
-import bot.callbacks.SetLanguageCallbackData
-import bot.callbacks.ShowLanguageSettingsCallbackData
-import bot.callbacks.ShowSettingsCallbackData
-import bot.callbacks.generateCallbackDataWithArgs
+import bot.Bot.Companion.MAX_CHAINS_COUNT
+import bot.callbacks.*
 import data.User
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.dataButton
@@ -26,6 +24,13 @@ data class MessageData(
 )
 
 private val localizer: Localizer by di.instance()
+
+fun getErrorMessageData(user: User, error: String): MessageData {
+    return MessageData(
+        chatId = user.tgId.toChatId(),
+        text = "error: $error"
+    )
+}
 
 fun getWelcomeMessageData(user: User): MessageData {
     val showSettingsCallbackData = ShowSettingsCallbackData()
@@ -61,7 +66,7 @@ fun getConfigSettingsMessageData(user: User): MessageData {
         ethConfig.joinToString("") { ethChain ->
             val tokenCount = ethChain.tokens.size
             """
-            ▪︎ ${ethChain.name} ($tokenCount token${if (tokenCount > 1) "s" else ""}) → RPC ${ethChain.rpcUrl}
+            ▪︎ ${ethChain.name} ($tokenCount token${if (tokenCount != 1) "s" else ""}) → RPC ${ethChain.rpcUrl}
             """
         }
     }
@@ -73,7 +78,9 @@ fun getConfigSettingsMessageData(user: User): MessageData {
 
     """.trimIndent()
 
-    val showLanguageSettingsCallbackData = ShowLanguageSettingsCallbackData()
+    val showLanguageSettingsCallbackData = ShowLanguageSettingsCallbackData
+    val showEthSettingsCallbackData = ShowEthSettingsCallbackData
+    val showSettingsCallbackData = ShowSettingsCallbackData(resetSettings = true)
     val keyboard = inlineKeyboard {
         row {
             dataButton(
@@ -82,9 +89,15 @@ fun getConfigSettingsMessageData(user: User): MessageData {
             )
         }
         row {
-            dataButton("eth settings", "e")
+            dataButton("ETH", generateCallbackDataWithArgs(showEthSettingsCallbackData))
             dataButton("sol settings", "s")
             dataButton("ton settings", "t")
+        }
+        row {
+            dataButton(
+                localizer.getText("resetSettings", user),
+                generateCallbackDataWithArgs(showSettingsCallbackData)
+            )
         }
     }
 
@@ -115,5 +128,74 @@ fun getLanguageSettingMessageData(tgId: Long): MessageData {
                 )
             }
         }
+    )
+}
+
+fun getEthSettingsMessageData(user: User): MessageData {
+    val ethConfig = user.config.eth
+    val rpcRows = ethConfig.mapIndexed { index, ethChain ->
+        val tokenCount = ethChain.tokens.size
+        val text =
+            "${index + 1}. ${ethChain.name} ($tokenCount token${if (tokenCount != 1) "s" else ""}) → RPC ${ethChain.rpcUrl}"
+        val chainControlCallbackData = ChainControlCallbackData(category = "eth", chainName = ethChain.name)
+        val deleteChainControlCallbackData =
+            ChainControlCallbackData(category = "eth", chainName = ethChain.name, removeChain = true)
+
+        row {
+            dataButton(text, generateCallbackDataWithArgs(chainControlCallbackData))
+            dataButton("❌", generateCallbackDataWithArgs(deleteChainControlCallbackData))
+        }
+    }
+
+    val showSettingsCallbackData = ShowSettingsCallbackData()
+    val addChainControlCallbackData =
+        ChainControlCallbackData(category = "eth", chainName = "New chain", addChain = true)
+    val keyboard = inlineKeyboard {
+        rpcRows.forEach { add(it) }
+
+        if (rpcRows.size < MAX_CHAINS_COUNT)
+            row {
+                dataButton(
+                    localizer.getText("addNewChain", user.config.language),
+                    generateCallbackDataWithArgs(addChainControlCallbackData)
+                )
+            }
+
+        add(getBackInlineButtonRow(localizer, user, showSettingsCallbackData))
+    }
+
+    return MessageData(
+        chatId = user.tgId.toChatId(),
+        text = localizer.getText("ethSettingsChoice", user.config.language),
+        keyboard = keyboard
+    )
+}
+
+fun getEthChainSettingsMessageData(user: User, chainName: String): MessageData {
+    val chain = user.config.eth.firstOrNull { it.name == chainName }
+        ?: return getErrorMessageData(user, "error_chain_not_found")
+
+    val text = """
+        ▪︎ ${chain.name} → RPC ${chain.rpcUrl}
+    """.trimIndent()
+
+    val tokenRows = chain.tokens.mapIndexed { index, token ->
+        val text = "${index + 1}. ${token.symbols} ${token.address}"
+
+        row {
+            dataButton(text, "remove_me_later")
+        }
+    }
+
+    val showEthSettingsCallbackData = ShowEthSettingsCallbackData
+    val keyboard = inlineKeyboard {
+        tokenRows.forEach { add(it) }
+        add(getBackInlineButtonRow(localizer, user, showEthSettingsCallbackData))
+    }
+
+    return MessageData(
+        chatId = user.tgId.toChatId(),
+        text = text,
+        keyboard = keyboard
     )
 }

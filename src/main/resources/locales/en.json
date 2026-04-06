@@ -3,5 +3,9 @@
   "language": "\uD83C\uDDFA\uD83C\uDDF8 English",
   "languageUpdated": "English language set",
   "settings": "Settings",
-  "languageSetting": "Language"
+  "languageSetting": "Language",
+  "addNewChain": "+ Add new chain",
+  "ethSettingsChoice": "ETH Chains settings",
+  "back": "↩ Back",
+  "resetSettings": "Reset settings"
 }

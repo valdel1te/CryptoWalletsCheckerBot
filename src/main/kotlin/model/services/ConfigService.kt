@@ -1,5 +1,6 @@
 package model.services
 
+import data.User
 import data.UserConfig
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
@@ -19,5 +20,11 @@ class ConfigService {
 
     fun getDefaultConfig(): UserConfig {
         return Json.decodeFromString(getDefaultConfigString())
+    }
+
+    fun deleteEthChainByName(user: User, name: String, onSuccess: (User) -> Unit) {
+        val newChainList = user.config.eth.filter { it.name != name }
+        user.config.eth = newChainList
+        onSuccess(user)
     }
 }

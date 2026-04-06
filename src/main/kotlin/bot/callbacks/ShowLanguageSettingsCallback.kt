@@ -13,9 +13,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("show_lang_settings")
-data class ShowLanguageSettingsCallbackData(
-    val placeholder: String = "",
-) : CallbackData
+object ShowLanguageSettingsCallbackData : CallbackData
 
 class ShowLanguageSettingsCallback(
     private val eventBus: EventBus,

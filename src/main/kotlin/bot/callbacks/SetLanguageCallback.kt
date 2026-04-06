@@ -19,7 +19,10 @@ import model.services.UserService
 @Serializable
 @SerialName("set_language")
 data class SetLanguageCallbackData(
+    @SerialName("l")
     val language: String,
+
+    @SerialName("show_wm")
     val showWelcomeMessage: Boolean,
 ) : CallbackData
 

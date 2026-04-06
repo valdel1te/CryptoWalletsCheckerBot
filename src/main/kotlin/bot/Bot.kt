@@ -28,5 +28,9 @@ class Bot(
 
     companion object {
         const val MAX_MESSAGE_LENGTH = 4096
+        const val MAX_CALLBACK_DATA_LENGTH_BYTES = 64
+        const val MAX_CHAINS_COUNT = 30
+
+        val availableCategories = listOf("eth", "sol", "ton")
     }
 }
