@@ -1,6 +1,7 @@
 package bot.commands
 
 import bot.events.EventBus
+import bot.fsm.UserState
 import bot.messages.BotMessageService
 import bot.messages.getConfigSettingsMessageData
 import bot.updates.chatIdOrNull
@@ -21,6 +22,8 @@ class SettingsCommand(
     override suspend fun handle(messageUpdate: MessageUpdate) {
         val tgId = messageUpdate.chatIdOrNull ?: return
         val user = userService.getByTgId(tgId) ?: return
+
+        userService.changeUserState(user, UserState.Default)
 
         val messageData = getConfigSettingsMessageData(user)
         eventBus.publish(messageService.createTextMessage(messageData))

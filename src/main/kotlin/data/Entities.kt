@@ -1,5 +1,6 @@
 package data
 
+import bot.fsm.UserState
 import org.ktorm.entity.Entity
 import kotlinx.serialization.Serializable
 
@@ -10,6 +11,7 @@ interface User : Entity<User> {
     val id: Int
     var tgId: Long
     var config: UserConfig
+    var state: UserState
 }
 
 interface Profile : Entity<Profile> {
@@ -29,25 +31,30 @@ data class UserConfig(
     var ton: List<TonChain>,
 )
 
+interface ChainWithTokens {
+    var name: String
+    var tokens: List<Token>
+}
+
 @Serializable
 data class EthChain(
-    var name: String,
+    override var name: String,
     var rpcUrl: String,
-    var tokens: List<Token>,
-)
+    override var tokens: List<Token>,
+) : ChainWithTokens
 
 @Serializable
 data class SolChain(
-    var name: String,
+    override var name: String,
     var rpcUrl: String,
-    var tokens: List<Token>,
-)
+    override var tokens: List<Token>,
+) : ChainWithTokens
 
 @Serializable
 data class TonChain(
-    var name: String,
-    var tokens: List<Token>,
-)
+    override var name: String,
+    override var tokens: List<Token>,
+) : ChainWithTokens
 
 @Serializable
 data class Token(

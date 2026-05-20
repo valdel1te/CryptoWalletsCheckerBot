@@ -1,6 +1,7 @@
 package bot.commands
 
 import bot.events.EventBus
+import bot.fsm.UserState
 import bot.messages.BotMessageService
 import bot.messages.MessageData
 import bot.messages.getLanguageSettingMessageData
@@ -26,6 +27,7 @@ class StartCommand(
 
         val messageData: MessageData
         if (user != null) {
+            userService.changeUserState(user, UserState.Default)
             messageData = getWelcomeMessageData(user)
         } else {
             userService.create(tgId)

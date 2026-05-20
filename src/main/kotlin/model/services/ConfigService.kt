@@ -1,5 +1,6 @@
 package model.services
 
+import data.ChainWithTokens
 import data.User
 import data.UserConfig
 import kotlinx.serialization.json.Json
@@ -26,5 +27,22 @@ class ConfigService {
         val newChainList = user.config.eth.filter { it.name != name }
         user.config.eth = newChainList
         onSuccess(user)
+    }
+
+    fun <T : ChainWithTokens> deleteTokenBySymbols(
+        chains: List<T>,
+        chainName: String,
+        tokenSymbols: String,
+        updateChains: (List<T>) -> Unit,
+        onSuccess: () -> Unit,
+    ) {
+        val updatedChains = chains.map { chain ->
+            if (chain.name == chainName) {
+                chain.tokens = chain.tokens.filter { it.symbols != tokenSymbols }
+            }
+            chain
+        }
+        updateChains(updatedChains)
+        onSuccess()
     }
 }

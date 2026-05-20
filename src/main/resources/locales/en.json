@@ -7,5 +7,8 @@
   "addNewChain": "+ Add new chain",
   "ethSettingsChoice": "ETH Chains settings",
   "back": "↩ Back",
-  "resetSettings": "Reset settings"
+  "resetSettings": "Reset settings",
+  "addTokenPrompt": "Enter token data in the format:\n`symbols-address`",
+  "addNewToken": "+ Add token",
+  "successfullyChangedTokenMessageData": "Success"
 }

@@ -1,5 +1,6 @@
 package model.services
 
+import bot.fsm.UserState
 import data.User
 import data.UserConfig
 import data.repositories.UserRepository
@@ -19,6 +20,7 @@ class UserService(
         val newUser = User {
             this.tgId = tgId
             this.config = config
+            this.state = UserState.Default
         }
 
         repository.create(newUser)
@@ -30,5 +32,10 @@ class UserService(
 
     fun getByTgId(tgId: Long): User? {
         return repository.getByTgId(tgId)
+    }
+
+    fun changeUserState(user: User, newState: UserState) {
+        user.state = newState
+        update(user)
     }
 }

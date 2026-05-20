@@ -102,6 +102,7 @@ val di = DI {
     bindSingletonOf(::SetLanguageCallback)
     bindSingletonOf(::ShowEthSettingsCallback)
     bindSingletonOf(::ChainControlCallback)
+    bindSingletonOf(::TokenControlCallback)
     bindSingleton<List<BotEvent>> {
         listOf(
             instance<StartCommand>(),
@@ -111,6 +112,7 @@ val di = DI {
             instance<SetLanguageCallback>(),
             instance<ShowEthSettingsCallback>(),
             instance<ChainControlCallback>(),
+            instance<TokenControlCallback>(),
         )
     }
 

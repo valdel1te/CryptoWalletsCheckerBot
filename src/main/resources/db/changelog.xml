@@ -9,6 +9,7 @@
         <dbms type="postgresql"/>
     </preConditions>
 
-    <include file="changes/1.0_users_profiles.xml" relativeToChangelogFile="true" />
+    <include file="changes/1.0_users_profiles.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1.1_user_states.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

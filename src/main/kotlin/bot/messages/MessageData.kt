@@ -90,8 +90,8 @@ fun getConfigSettingsMessageData(user: User): MessageData {
         }
         row {
             dataButton("ETH", generateCallbackDataWithArgs(showEthSettingsCallbackData))
-            dataButton("sol settings", "s")
-            dataButton("ton settings", "t")
+            dataButton("(not available) sol settings", "s")
+            dataButton("(not available) ton settings", "t")
         }
         row {
             dataButton(
@@ -171,6 +171,26 @@ fun getEthSettingsMessageData(user: User): MessageData {
     )
 }
 
+fun getAddTokenMessageData(user: User, chainName: String): MessageData {
+    val backCallbackData = ChainControlCallbackData(category = "eth", chainName = chainName)
+    val keyboard = inlineKeyboard {
+        add(getBackInlineButtonRow(localizer, user, backCallbackData))
+    }
+
+    return MessageData(
+        chatId = user.tgId.toChatId(),
+        text = localizer.getText("addTokenPrompt", user.config.language),
+        keyboard = keyboard
+    )
+}
+
+fun getSuccessfullyChangedTokenMessageData(user: User): MessageData {
+    return MessageData(
+        chatId = user.tgId.toChatId(),
+        text = localizer.getText("successfullyChangedTokenMessageData", user.config.language)
+    )
+}
+
 fun getEthChainSettingsMessageData(user: User, chainName: String): MessageData {
     val chain = user.config.eth.firstOrNull { it.name == chainName }
         ?: return getErrorMessageData(user, "error_chain_not_found")
@@ -180,16 +200,40 @@ fun getEthChainSettingsMessageData(user: User, chainName: String): MessageData {
     """.trimIndent()
 
     val tokenRows = chain.tokens.mapIndexed { index, token ->
-        val text = "${index + 1}. ${token.symbols} ${token.address}"
+        val tokenText = "${index + 1}. ${token.symbols} ${token.address}"
+        val editTokenCallbackData = TokenControlCallbackData(
+            category = "eth",
+            tokenName = token.symbols,
+            chainName = chainName
+        )
+        val removeTokenCallbackData = TokenControlCallbackData(
+            category = "eth",
+            tokenName = token.symbols,
+            chainName = chainName,
+            removeToken = true
+        )
 
         row {
-            dataButton(text, "remove_me_later")
+            dataButton(tokenText, generateCallbackDataWithArgs(editTokenCallbackData))
+            dataButton("❌", generateCallbackDataWithArgs(removeTokenCallbackData))
         }
     }
 
+    val addTokenCallbackData = TokenControlCallbackData(
+        category = "eth",
+        tokenName = "",
+        chainName = chainName,
+        addToken = true
+    )
     val showEthSettingsCallbackData = ShowEthSettingsCallbackData
     val keyboard = inlineKeyboard {
         tokenRows.forEach { add(it) }
+        row {
+            dataButton(
+                localizer.getText("addNewToken", user.config.language),
+                generateCallbackDataWithArgs(addTokenCallbackData)
+            )
+        }
         add(getBackInlineButtonRow(localizer, user, showEthSettingsCallbackData))
     }
 
