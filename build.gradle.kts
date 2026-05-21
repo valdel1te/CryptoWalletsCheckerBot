@@ -1,11 +1,17 @@
 plugins {
-    kotlin("jvm") version "2.0.10"
-    kotlin("plugin.serialization") version "1.8.22"
+    kotlin("jvm") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
+    id("io.kriptal.ethers.abigen-plugin") version "1.4.4"
     application
 }
 
 group = "yo.soft"
 version = "1.0-SNAPSHOT"
+
+ethersAbigen {
+    directorySource("src/main/abi")
+    outputDir = "generated/source/ethers/main/kotlin"
+}
 
 repositories {
     mavenCentral()
@@ -32,6 +38,8 @@ dependencies {
     implementation("org.ktorm:ktorm-core:$ktormVersion")
     implementation("org.ktorm:ktorm-support-postgresql:$ktormVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.ktorm:ktorm-jackson:$ktormVersion")
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
     // DI
     implementation("org.kodein.di:kodein-di:$kodeinVersion")
     implementation("com.typesafe:config:$typesafeVersion")
@@ -39,11 +47,18 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinJsonVersion")
     // LOG
     implementation("ch.qos.logback:logback-classic:$logbackVersion") // SLF4J + Logback
-    // https://mvnrepository.com/artifact/org.liquibase/liquibase-maven-plugin
-    implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     // TEST
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:$mockkVersion")
+    // BOM
+    implementation(platform("io.kriptal.ethers:ethers-bom:1.4.4"))
+    // ETH
+    implementation("io.kriptal.ethers:ethers-abi")
+    implementation("io.kriptal.ethers:ethers-core")
+    implementation("io.kriptal.ethers:ethers-providers")
+    implementation("io.kriptal.ethers:ethers-signers")
+    // SOL
+    implementation("org.sol4k:sol4k:0.5.17")
 }
 
 application {

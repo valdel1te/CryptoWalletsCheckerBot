@@ -1,17 +1,26 @@
 import bot.Bot
-import bot.Configuration
+import bot.events.BotEventListener
+import io.ktor.client.*
+import liquibase.Liquibase
+import model.PriceCache
 import org.kodein.di.instance
-import server.Server
-import server.domain.repositories.InMemoryRandomRepository
+import java.sql.Connection
+
+const val TOKENS =
+    "eth,usdt,usdc,usdt0,bnb,weth,arb,sol,op,wld,pengu,abster,big,trx,jup,ssol,bonk,ton,not,blum,dogs,major,px"
 
 suspend fun main() {
-    val repo = InMemoryRandomRepository()
+    val connection: Connection by di.instance()
+    val migration: Liquibase by di.instance()
+    migration.update()
+    connection.close()
 
-    val server = Server(port = 8081, repo = repo)
-    server.start()
+    val priceCache: PriceCache by di.instance()
+    priceCache.fillTokensPrice(TOKENS) // initial base price list
 
     val bot: Bot by di.instance()
-    val botToken = Configuration.getData("token")
+    val eventListener: BotEventListener by di.instance()
 
-    bot.startWithFSMAndLongPolling(botToken)
+    eventListener.start()
+    bot.startWithFSMAndLongPolling()
 }

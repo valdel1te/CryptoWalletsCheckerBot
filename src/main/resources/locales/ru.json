@@ -1,0 +1,15 @@
+{
+  "chooseLanguage": "Выберите язык",
+  "language": "\uD83C\uDDF7\uD83C\uDDFA Русский",
+  "languageUpdated": "Установлен русский язык",
+  "settings": "Настройки",
+  "languageSetting": "Язык",
+  "addNewChain": "+ Добавить сеть",
+  "ethSettingsChoice": "Настройка ETH сетей",
+  "back": "↩ Назад",
+  "resetSettings": "Сброс настроек",
+  "addTokenPrompt": "Введите данные токена в формате:\n`symbols-address`",
+  "addNewToken": "+ Добавить токен",
+  "successfullyChangedTokenMessageData": "Успешно",
+  "balance": "Баланс"
+}

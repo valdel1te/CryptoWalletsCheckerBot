@@ -1,0 +1,256 @@
+{
+  "language": "en",
+  "eth": [
+    {
+      "name": "Main ETH",
+      "rpcUrl": "wss://0xrpc.io/eth",
+      "tokens": [
+        {
+          "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "symbols": "USDT"
+        },
+        {
+          "address": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+          "symbols": "BNB"
+        },
+        {
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "symbols": "USDC"
+        },
+        {
+          "address": "0x3c3a81e81dc49A522A592e7622A7E711c06bf354",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1",
+          "symbols": "MNT"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "symbols": "ARB"
+        }
+      ]
+    },
+    {
+      "name": "Base",
+      "rpcUrl": "https://mainnet.base.org",
+      "tokens": [
+        {
+          "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "symbols": "USDC"
+        },
+        {
+          "address": "0x4200000000000000000000000000000000000006",
+          "symbols": "WETH"
+        }
+      ]
+    },
+    {
+      "name": "Arbitrum",
+      "rpcUrl": "https://arb1.arbitrum.io/rpc",
+      "tokens": [
+        {
+          "address": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+          "symbols": "USDC"
+        },
+        {
+          "address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+          "symbols": "USDT0"
+        },
+        {
+          "address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+          "symbols": "ARB"
+        }
+      ]
+    },
+    {
+      "name": "Polygon",
+      "rpcUrl": "https://polygon-rpc.com/",
+      "tokens": [
+        {
+          "address": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0x3BA4c387f786bFEE076A58914F5Bd38d668B42c3",
+          "symbols": "BNB"
+        },
+        {
+          "address": "0xd93f7E271cB87c23AaA73edC008A79646d1F9912",
+          "symbols": "SOL"
+        },
+        {
+          "address": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+          "symbols": "USDC"
+        },
+        {
+          "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+          "symbols": "USDT0"
+        }
+      ]
+    },
+    {
+      "name": "Optimism",
+      "rpcUrl": "https://mainnet.optimism.io",
+      "tokens": [
+        {
+          "address": "0x4200000000000000000000000000000000000042",
+          "symbols": "OP"
+        },
+        {
+          "address": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "symbols": "USDT"
+        },
+        {
+          "address": "0xdC6fF44d5d932Cbd77B52E5612Ba0529DC6226F1",
+          "symbols": "WLD"
+        },
+        {
+          "address": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+          "symbols": "USDC"
+        },
+        {
+          "address": "0x4200000000000000000000000000000000000006",
+          "symbols": "WETH"
+        }
+      ]
+    },
+    {
+      "name": "Abstract",
+      "rpcUrl": "https://api.mainnet.abs.xyz",
+      "tokens": [
+        {
+          "address": "0x9eBe3A824Ca958e4b3Da772D2065518F009CBa62",
+          "symbols": "PENGU"
+        },
+        {
+          "address": "0xc325b7e2736A5202bd860F5974D0AA375E57EdE5",
+          "symbols": "ABSTER"
+        },
+        {
+          "address": "0x0709F39376dEEe2A2dfC94A58EdEb2Eb9DF012bD",
+          "symbols": "USDT"
+        },
+        {
+          "address": "0x000000000000000000000000000000000000800A",
+          "symbols": "ETH"
+        },
+        {
+          "address": "0x3439153EB7AF838Ad19d56E1571FBD09333C2809",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0xDf70075737E9F96B078ab4461EeE3e055E061223",
+          "symbols": "BIG"
+        }
+      ]
+    },
+    {
+      "name": "BSC",
+      "rpcUrl": "https://bsc-dataseed.bnbchain.org",
+      "tokens": [
+        {
+          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "symbols": "ETH"
+        },
+        {
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0xCE7de646e7208a4Ef112cb6ed5038FA6cC6b12e3",
+          "symbols": "TRX"
+        }
+      ]
+    },
+    {
+      "name": "ZkSync",
+      "rpcUrl": "https://mainnet.era.zksync.io",
+      "tokens": [
+        {
+          "address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E",
+          "symbols": "ZK"
+        },
+        {
+          "address": "0x000000000000000000000000000000000000800A",
+          "symbols": "ETH"
+        },
+        {
+          "address": "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+          "symbols": "WETH"
+        },
+        {
+          "address": "0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4",
+          "symbols": "USDC"
+        }
+      ]
+    }
+  ],
+  "sol": [
+    {
+      "name": "Solana",
+      "rpcUrl": "https://api.mainnet-beta.solana.com",
+      "tokens": [
+        {
+          "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "symbols": "USDC"
+        },
+        {
+          "address": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+          "symbols": "JUP"
+        },
+        {
+          "address": "sSo14endRuUbvQaJS3dq36Q829a3A6BEfoeeRGJywEh",
+          "symbols": "SSOL"
+        },
+        {
+          "address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+          "symbols": "BONK"
+        },
+        {
+          "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          "symbols": "USDT"
+        },
+        {
+          "address": "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv",
+          "symbols": "PENGU"
+        }
+      ]
+    }
+  ],
+  "ton": [
+    {
+      "name": "TON",
+      "tokens": [
+        {
+          "address": "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT",
+          "symbols": "NOT"
+        },
+        {
+          "address": "EQCAj5oiRRrXokYsg_B-e0KG9xMwh5upr5I8HQzErm0_BLUM",
+          "symbols": "BLUM"
+        },
+        {
+          "address": "EQCvxJy4eG8hyHBFsZ7eePxrRsUQSFE_jpptRAYBmcG_DOGS",
+          "symbols": "DOGS"
+        },
+        {
+          "address": "EQCuPm01HldiduQ55xaBF_1kaW_WAUy5DHey8suqzU_MAJOR",
+          "symbols": "MAJOR"
+        },
+        {
+          "address": "EQB420yQsZobGcy0VYDfSKHpG2QQlw-j1f_tPu1J488I__PX",
+          "symbols": "PX"
+        },
+        {
+          "address": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+          "symbols": "USDT"
+        }
+      ]
+    }
+  ]
+}
