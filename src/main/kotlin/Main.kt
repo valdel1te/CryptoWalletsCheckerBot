@@ -16,7 +16,7 @@ suspend fun main() {
     connection.close()
 
     val priceCache: PriceCache by di.instance()
-    priceCache.fillTokensPrice(HttpClient(), TOKENS) // initial base price list
+    priceCache.fillTokensPrice(TOKENS) // initial base price list
 
     val bot: Bot by di.instance()
     val eventListener: BotEventListener by di.instance()

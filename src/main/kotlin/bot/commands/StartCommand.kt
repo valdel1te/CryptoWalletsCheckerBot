@@ -10,12 +10,14 @@ import bot.updates.chatIdOrNull
 import bot.updates.hasCommand
 import dev.inmo.tgbotapi.types.update.MessageUpdate
 import dev.inmo.tgbotapi.types.update.abstracts.Update
+import model.services.ProfileService
 import model.services.UserService
 
 class StartCommand(
     private val eventBus: EventBus,
     private val messageService: BotMessageService,
     private val userService: UserService,
+    private val profileService: ProfileService,
 ) : Command {
     override fun canHandle(update: Update): Boolean {
         return super.canHandle(update) && (update as MessageUpdate).hasCommand("/start")
@@ -28,9 +30,12 @@ class StartCommand(
         val messageData: MessageData
         if (user != null) {
             userService.changeUserState(user, UserState.Default)
-            messageData = getWelcomeMessageData(user)
+            val profiles = profileService.getUserProfiles(user)
+            val balances = profileService.getProfilesBalances(user, profiles)
+            messageData = getWelcomeMessageData(user, balances)
         } else {
             userService.create(tgId)
+            profileService.addNew(userService.getByTgId(tgId)!!, "Profile 1")
             messageData = getLanguageSettingMessageData(tgId)
         }
 

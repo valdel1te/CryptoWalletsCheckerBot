@@ -14,6 +14,7 @@ import dev.inmo.tgbotapi.types.update.abstracts.Update
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.Localizer
+import model.services.ProfileService
 import model.services.UserService
 
 @Serializable
@@ -31,6 +32,7 @@ class SetLanguageCallback(
     private val messageService: BotMessageService,
     private val userService: UserService,
     private val localizer: Localizer,
+    private val profileService: ProfileService,
 ) : Callback {
     override fun canHandle(update: Update): Boolean {
         if (!super.canHandle(update))
@@ -57,7 +59,9 @@ class SetLanguageCallback(
         eventBus.publish(messageService.editTextMessage(messageData, callbackUpdate.messageId ?: return))
 
         if (data.showWelcomeMessage) {
-            val messageData = getWelcomeMessageData(user)
+            val profiles = profileService.getUserProfiles(user)
+            val balances = profileService.getProfilesBalances(user, profiles)
+            val messageData = getWelcomeMessageData(user, balances)
             eventBus.publish(messageService.createTextMessage(messageData))
         }
     }

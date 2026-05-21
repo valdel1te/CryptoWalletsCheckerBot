@@ -2,6 +2,7 @@ package bot.messages
 
 import bot.Bot.Companion.MAX_CHAINS_COUNT
 import bot.callbacks.*
+import data.Profile
 import data.User
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.dataButton
@@ -15,6 +16,9 @@ import dev.inmo.tgbotapi.utils.row
 import di
 import model.Localizer
 import org.kodein.di.instance
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.collections.joinToString
 
 data class MessageData(
     val chatId: ChatId,
@@ -32,7 +36,7 @@ fun getErrorMessageData(user: User, error: String): MessageData {
     )
 }
 
-fun getWelcomeMessageData(user: User): MessageData {
+fun getWelcomeMessageData(user: User, balances: Map<Profile, BigDecimal>): MessageData {
     val showSettingsCallbackData = ShowSettingsCallbackData()
     val keyboard = inlineKeyboard {
         row {
@@ -43,10 +47,24 @@ fun getWelcomeMessageData(user: User): MessageData {
         }
     }
 
+    val text = """
+        ${localizer.getText("balance", user)}:
+        ${
+        balances.entries.joinToString("\n") { (profile, balance) ->
+            val formattedBalance = balance.setScale(2, RoundingMode.HALF_UP).toPlainString()
+            
+            """
+            ${profile.name}: $${formattedBalance}
+            """
+        }
+    }
+        """.trimIndent()
+
     return MessageData(
         chatId = user.tgId.toChatId(),
-        text = "WELCOME BROTHER", // TODO: welcome message text
-        keyboard = keyboard
+        text = text,
+        keyboard = keyboard,
+        parseMode = MarkdownParseMode
     )
 }
 

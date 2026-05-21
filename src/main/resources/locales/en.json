@@ -10,5 +10,6 @@
   "resetSettings": "Reset settings",
   "addTokenPrompt": "Enter token data in the format:\n`symbols-address`",
   "addNewToken": "+ Add token",
-  "successfullyChangedTokenMessageData": "Success"
+  "successfullyChangedTokenMessageData": "Success",
+  "balance": "Balance"
 }

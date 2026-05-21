@@ -25,14 +25,14 @@ class SplChecker(private val priceCache: PriceCache) {
         val wallet = PublicKey(addressString)
         val balanceLamports = connection.getBalance(wallet)
 
-        var balance = priceCache.getTokenPrice(client, "sol") * BigDecimal(balanceLamports).movePointLeft(9)
+        var balance = priceCache.getTokenPrice("sol") * BigDecimal(balanceLamports).movePointLeft(9)
         tokenList.forEach { token ->
             val tokenInfo = searchTokenInfo(client, token)
             val symbol = tokenInfo.symbol.lowercase()
             val price = if (tokenInfo.usdPrice == 0.0) {
                 delay(500)
 
-                priceCache.getTokenPrice(client, symbol)
+                priceCache.getTokenPrice(symbol)
             } else {
                 val tokenPriceBigDecimal = tokenInfo.usdPrice.toBigDecimal()
                 priceCache.addNewPrice(symbol, tokenPriceBigDecimal)

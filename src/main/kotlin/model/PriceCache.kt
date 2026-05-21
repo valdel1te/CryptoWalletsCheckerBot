@@ -9,7 +9,7 @@ import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
 
-class PriceCache {
+class PriceCache(private val client: HttpClient) {
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
     private val coinGeckoApiSimple = "https://api.coingecko.com/api/v3/simple/"
@@ -17,7 +17,7 @@ class PriceCache {
     private var lastUpdate: Instant? = null
     private var cachedPrices: MutableMap<String, BigDecimal> = mutableMapOf()
 
-    suspend fun getTokenPrice(client: HttpClient, token: String): BigDecimal {
+    suspend fun getTokenPrice(token: String, client: HttpClient = this.client): BigDecimal {
         val now = Instant.now()
 
         if (lastUpdate == null || Duration.between(lastUpdate, now).toMinutes() > 10 || cachedPrices[token] == null) {
@@ -44,7 +44,7 @@ class PriceCache {
         logger.info("Updating prices, arg token: ${token.lowercase()} -> ${cachedPrices[token] ?: BigDecimal(0)}")
     }
 
-    suspend fun fillTokensPrice(client: HttpClient, tokens: String) {
+    suspend fun fillTokensPrice(tokens: String, client: HttpClient = this.client) {
         cachedPrices = fetchPricesUsd(client, tokens) ?: cachedPrices
         lastUpdate = Instant.now()
 
@@ -55,7 +55,7 @@ class PriceCache {
         return cachedPrices.entries.joinToString("\n") { "${it.key}: ${it.value}" }
     }
 
-    private suspend fun fetchPricesUsd(client: HttpClient, symbols: String): MutableMap<String, BigDecimal>? {
+    private suspend fun fetchPricesUsd(client: HttpClient = this.client, symbols: String): MutableMap<String, BigDecimal>? {
         try {
             val url = "${coinGeckoApiSimple}price?symbols=${symbols}&vs_currencies=usd"
 

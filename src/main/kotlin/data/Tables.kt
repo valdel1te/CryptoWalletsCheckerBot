@@ -13,7 +13,7 @@ object Users : Table<User>("users") {
 
 object Profiles : Table<Profile>("profiles") {
     val id = int("id").primaryKey().bindTo { it.id }
-    val userId = int("user_id").references(Users) { it.user }.bindTo { it.user.id }
+    val userId = int("user_id").references(Users) { it.user }
     val name = varchar("name").bindTo { it.name }
     val addresses = text("addresses").bindTo { it.addresses }
 }

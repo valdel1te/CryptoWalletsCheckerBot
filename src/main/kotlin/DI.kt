@@ -2,6 +2,7 @@ import bot.Bot
 import bot.BotEvent
 import bot.EventHandler
 import bot.callbacks.*
+import bot.commands.AddAddressToProfile1Command
 import bot.commands.SettingsCommand
 import bot.commands.StartCommand
 import bot.events.BotEventListener
@@ -13,6 +14,7 @@ import data.repositories.ProfileRepository
 import data.repositories.UserRepository
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.telegramBot
+import io.ktor.client.*
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
@@ -103,6 +105,7 @@ val di = DI {
     bindSingletonOf(::ShowEthSettingsCallback)
     bindSingletonOf(::ChainControlCallback)
     bindSingletonOf(::TokenControlCallback)
+    bindSingletonOf(::AddAddressToProfile1Command)
     bindSingleton<List<BotEvent>> {
         listOf(
             instance<StartCommand>(),
@@ -113,10 +116,12 @@ val di = DI {
             instance<ShowEthSettingsCallback>(),
             instance<ChainControlCallback>(),
             instance<TokenControlCallback>(),
+            instance<AddAddressToProfile1Command>(),
         )
     }
 
     // helpers
+    bindSingleton<HttpClient> { HttpClient() } // for price cache
     bindSingletonOf(::PriceCache)
     bindSingletonOf(::Localizer)
 

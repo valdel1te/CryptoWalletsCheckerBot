@@ -20,13 +20,13 @@ class JettonChecker(private val priceCache: PriceCache) {
     ): BigDecimal {
         var balance = BigDecimal.ZERO
 
-        try {
+        runCatching {
             val json = Json { ignoreUnknownKeys = true }
             val walletInfoUrl = "${tonApi}/accounts/$addressString"
 
             val walletInfoResponse: String = client.get(walletInfoUrl).body()
             val walletInfo = json.decodeFromString<WalletInfo>(walletInfoResponse)
-            val tonPrice = priceCache.getTokenPrice(client, "ton")
+            val tonPrice = priceCache.getTokenPrice("ton")
             balance += tonPrice * walletInfo.balance.toBigDecimal().movePointLeft(9)
 
             tokenList.forEach { token ->
@@ -34,14 +34,19 @@ class JettonChecker(private val priceCache: PriceCache) {
 
                 val jettonUserInfoUrl = "$walletInfoUrl/jettons/$token"
                 val jettonUserInfoResponse: String = client.get(jettonUserInfoUrl).body()
-                val jettonUserInfo = json.decodeFromString<JettonUserInfo>(jettonUserInfoResponse)
-                val tokenPrice = priceCache.getTokenPrice(client, jettonUserInfo.jetton.symbol.lowercase())
-                val tokenBalance = jettonUserInfo.balance.toBigDecimal().movePointLeft(jettonUserInfo.jetton.decimals)
-                balance += tokenPrice * tokenBalance
+                runCatching {
+                    val jettonUserInfo = json.decodeFromString<JettonUserInfo>(jettonUserInfoResponse)
+                    val tokenPrice = priceCache.getTokenPrice(jettonUserInfo.jetton.symbol.lowercase())
+                    val tokenBalance =
+                        jettonUserInfo.balance.toBigDecimal().movePointLeft(jettonUserInfo.jetton.decimals)
+                    balance += tokenPrice * tokenBalance
+                }.onFailure {
+                    logger.error(it.message)
+                    return@forEach
+                }
             }
-        } catch (e: Exception) {
-            logger.error(e.message)
-            balance = BigDecimal.ZERO
+        }.onFailure {
+            logger.error(it.message)
         }
 
         return balance
